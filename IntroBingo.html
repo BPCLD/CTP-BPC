@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Building Bingo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        #bingo-board {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center; /* Center align content */
+        }
+        .bingo-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .bingo-square {
+            width: calc(20% - 10px);
+            text-align: center;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: relative;
+        }
+        .bingo-square:hover {
+            background-color: #f0f0f0;
+        }
+        .bingo-square img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 5px;
+        }
+        .bingo-square.clicked {
+            background-color: #7ad67a; /* Light green */
+            color: #fff;
+        }
+        .submit-button {
+            display: none; /* Initially hidden */
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #ff8c00; /* Orange */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .submit-button:hover {
+            background-color: #ff9900; /* Darker orange on hover */
+        }
+        .submit-button.disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #333;
+            text-shadow: 2px 2px 2px rgba(0,0,0,0.1);
+        }
+        #bingo-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        #bingo-button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+    </style>
+</head>
+<body>
+
+<div id="bingo-board">
+    <h1>Team Building Bingo</h1>
+    <div id="bingo-grid"></div>
+    <button id="bingo-button" onclick="generateBingoCard()">Generate Bingo Card</button>
+    <button class="submit-button" onclick="submitBingoCard()">Submit</button>
+</div>
+
+<script>
+    let squaresLocked = false; // Initially squares are not locked
+
+    function generateBingoCard() {
+        var squares = [
+            { text: "Plays a musical instrument", icon: "fas fa-music" },
+            { text: "Speaks more than one language", icon: "fas fa-language" },
+            { text: "Has traveled to another country", icon: "fas fa-globe-americas" },
+            { text: "Is a coffee enthusiast", icon: "fas fa-coffee" },
+            { text: "Has a pet", icon: "fas fa-paw" },
+            { text: "Enjoys hiking or camping", icon: "fas fa-hiking" },
+            { text: "Is a tech geek", icon: "fas fa-laptop-code" },
+            { text: "Loves to cook or bake", icon: "fas fa-utensils" },
+            { text: "Is a bookworm", icon: "fas fa-book-open" },
+            { text: "Has completed a marathon", icon: "fas fa-running" },
+            { text: "Is a morning person", icon: "fas fa-sun" },
+            { text: "Has skydived or bungee jumped", icon: "fas fa-parachute-box" },
+            { text: "Is a movie buff", icon: "fas fa-film" },
+            { text: "Is a sports fan", icon: "fas fa-football-ball" },
+            { text: "Has a green thumb", icon: "fas fa-leaf" },
+            { text: "Loves to dance", icon: "fas fa-dance" },
+            { text: "Enjoys DIY projects", icon: "fas fa-tools" },
+            { text: "Is a gamer", icon: "fas fa-gamepad" },
+            { text: "Has a fear of heights", icon: "fas fa-exclamation-triangle" },
+            { text: "Is a foodie", icon: "fas fa-utensils" },
+            { text: "Has attended a concert", icon: "fas fa-music" },
+            { text: "Is a photography enthusiast", icon: "fas fa-camera" },
+            { text: "Enjoys meditation or yoga", icon: "fas fa-praying-hands" },
+            { text: "Is a beach lover", icon: "fas fa-beach-ball" },
+            { text: "Has volunteered for a cause", icon: "fas fa-hands-helping" }
+        ];
+
+        var shuffledSquares = shuffleArray(squares);
+        var bingoGrid = document.getElementById('bingo-grid');
+        bingoGrid.innerHTML = '';
+
+        for (var i = 0; i < 25; i++) {
+            var square = document.createElement('div');
+            square.classList.add('bingo-square');
+            var squareIcon = document.createElement('i');
+            squareIcon.classList.add(shuffledSquares[i].icon);
+            var squareText = document.createElement('p');
+            squareText.textContent = shuffledSquares[i].text;
+            square.appendChild(squareIcon);
+            square.appendChild(squareText);
+            square.addEventListener('click', function() {
+                if (!squaresLocked) {
+                    this.classList.toggle('clicked');
+                }
+            });
+            bingoGrid.appendChild(square);
+        }
+
+        var rows = document.querySelectorAll('.bingo-square');
+        for (var i = 0; i < rows.length; i += 5) {
+            var row = document.createElement('div');
+            row.classList.add('bingo-row');
+            for (var j = i; j < i + 5; j++) {
+                row.appendChild(rows[j]);
+            }
+            bingoGrid.appendChild(row);
+        }
+
+        document.querySelector('.submit-button').style.display = 'inline-block';
+        squaresLocked = false; // Reset the lock state
+        document.querySelector('.submit-button').classList.remove('disabled'); // Enable the Submit button
+    }
+
+    function submitBingoCard() {
+        squaresLocked = true; // Lock the squares
+        document.querySelector('.submit-button').classList.add('disabled'); // Disable the Submit button
+    }
+
+    function shuffleArray(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+        return array;
+    }
+</script>
+
+</body>
+</html>
